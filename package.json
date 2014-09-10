@@ -1,0 +1,10 @@
+{
+	"name": "kiruna",
+	"description": "Docker orchestration and watchdog",
+	"dependencies": {
+		"async": "*",
+		"dockerode": "2.x",
+		"underscore": "1.x"
+	},
+	"private": "true"
+}
