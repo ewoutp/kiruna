@@ -1,9 +1,13 @@
+"use strict";
+
 // Docker service orchestration and watchdog tool
 var _ = require('underscore');
 var async = require('async');
 var Configuration = require('./lib/Configuration');
 var util = require('util');
 var Docker = require('dockerode');
+var log = require('winston');
+var pkg = require('./package.json');
 
 // Main server
 var Server = function() {
@@ -15,9 +19,10 @@ var Server = function() {
 		// Configuration has changed
 		var application;
 		try {
+			log.info('**** Configuration change detected. Launching app...');
 			application = self.configuration.buildApplication();
 			application.up(function(err) {
-				if (err) return console.log('Failed to up application: ' + err);
+				if (err) return log.error('Failed to up application: %s', err);
 			});
 		} catch (err) {
 			console.log(err);
@@ -35,5 +40,6 @@ Server.prototype.start = function() {
 	self.configuration.startWatcher();
 }
 
+//log.add(log.transports.File, { level: 'debug', filename: pkg.name + '-debug.log' });
 var server = new Server();
 server.start();

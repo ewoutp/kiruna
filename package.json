@@ -1,10 +1,18 @@
 {
 	"name": "kiruna",
+	"version": "0.0.1",
 	"description": "Docker orchestration and watchdog",
 	"dependencies": {
 		"async": "*",
 		"dockerode": "2.x",
-		"underscore": "1.x"
+		"underscore": "1.x",
+		"winston": "0.x"
+	},
+	"devDependencies": {
+		"grunt": ">=0.4.5",
+		"grunt-release": "1.x",
+		"grunt-contrib-jshint": "*",
+		"grunt-jasmine-node": "*"
 	},
 	"private": "true"
 }
