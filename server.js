@@ -15,22 +15,50 @@ var Server = function() {
 	self.docker = new Docker({
 		socketPath: '/var/run/docker.sock'
 	});
-	self.configuration = new Configuration(self.docker, function() {
+	self.workQueue = async.queue(function(task, cb) {
+		var taskName = task.name;
+		var handler = task.handler;
+		log.info('Processing %s', taskName);
+		handler(function(err) {
+			if (err) {
+				log.error('Task %s failed because: %j', taskName, err);
+			}
+			log.info('Task %s completed', taskName);
+			cb();
+		});
+	});
+	self.configuration = new Configuration(self.docker, function(cb) {
 		// Configuration has changed
-		var application;
-		try {
-			log.info('**** Configuration change detected. Launching app...');
-			application = self.configuration.buildApplication();
-			application.up(function(err) {
-				if (err) return log.error('Failed to up application: %s', err);
-			});
-		} catch (err) {
-			console.log(err);
-			return;
-		}
+		self.workQueue.kill(); // Clear work queue
+		self.workQueue.push({
+			name: 'configuration-changed',
+			handler: function(done) {
+				self._onConfigChanged(done);
+			}
+		}, cb);
 	});
 }
 
+/**
+ * Called when the configuration has changed.
+ */
+Server.prototype._onConfigChanged = function(cb) {
+	var self = this;
+	try {
+		log.info('**** Configuration change detected. Launching app...');
+		var application = self.configuration.buildApplication();
+		application.up(function(err) {
+			if (err) {
+				log.error('Failed to up application: %s', err);
+			}
+			log.info('App is up');
+			return cb();
+		});
+	} catch (err) {
+		log.error('Error in _onConfigChanged', err);
+		return cb(err);
+	}
+}
 
 /**
  * Start listening to configuration changes
