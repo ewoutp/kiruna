@@ -6,14 +6,21 @@
 		"async": "*",
 		"dockerode": "2.x",
 		"request": "2.x",
-		"underscore": "1.x",		
+		"underscore": "1.x",
 		"winston": "0.x"
 	},
 	"devDependencies": {
 		"grunt": ">=0.4.5",
+		"grunt-dib": ">=0.1.2",
+	    "grunt-exec": "*",
 		"grunt-release": "1.x",
 		"grunt-contrib-jshint": "*",
 		"grunt-jasmine-node": "*"
 	},
-	"private": "true"
+	"publishConfig": {
+		"registry": "http://arvika-ssh:16073/"
+	},
+	"scripts": {
+		"up": "docker run -it -v /var/run/docker.sock:/var/run/docker.sock -e IP=$IP kiruna"
+	}
 }
