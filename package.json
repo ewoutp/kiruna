@@ -7,7 +7,8 @@
 		"dockerode": "2.x",
 		"request": "2.x",
 		"underscore": "1.x",
-		"winston": "0.x"
+		"winston": "0.x",
+		"winston-loggly": "1.x"
 	},
 	"devDependencies": {
 		"grunt": ">=0.4.5",
