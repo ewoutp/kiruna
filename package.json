@@ -5,7 +5,8 @@
 	"dependencies": {
 		"async": "*",
 		"dockerode": "2.x",
-		"underscore": "1.x",
+		"request": "2.x",
+		"underscore": "1.x",		
 		"winston": "0.x"
 	},
 	"devDependencies": {

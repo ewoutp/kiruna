@@ -6,15 +6,16 @@ var async = require('async');
 var Configuration = require('./lib/Configuration');
 var util = require('util');
 var Docker = require('dockerode');
+var DockerWrapper = require('./lib/DockerWrapper');
 var log = require('winston');
 var pkg = require('./package.json');
 
 // Main server
 var Server = function() {
 	var self = this;
-	self.docker = new Docker({
+	self.docker = new DockerWrapper(new Docker({
 		socketPath: '/var/run/docker.sock'
-	});
+	}));
 	self.workQueue = async.queue(function(task, cb) {
 		var taskName = task.name;
 		var handler = task.handler;
@@ -47,15 +48,16 @@ Server.prototype._onConfigChanged = function(cb) {
 	try {
 		log.info('**** Configuration change detected. Launching app...');
 		var application = self.configuration.buildApplication();
-		application.up(function(err) {
+		application.launch(function(err) {
 			if (err) {
-				log.error('Failed to up application: %s', err);
+				log.error('Failed to launch application: %s', err);
 			}
-			log.info('App is up');
+			log.verbose('Application launch process completed');
+			self.application = application;
 			return cb();
 		});
 	} catch (err) {
-		log.error('Error in _onConfigChanged', err);
+		log.error('Error in _onConfigChanged %s', util.inspect(err));
 		return cb(err);
 	}
 }
