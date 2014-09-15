@@ -110,7 +110,6 @@ Server.prototype.start = function() {
 				});
 				break;
 			case 'h':
-			default:
 				console.log('Console:');
 				console.log('r - Reload');
 				console.log('s - Stop all services');
