@@ -9,6 +9,7 @@ var Docker = require('dockerode');
 var DockerWrapper = require('./lib/DockerWrapper');
 var log = require('winston');
 var pkg = require('./package.json');
+var keypress = require('keypress');
 
 // Main server
 var Server = function() {
@@ -47,7 +48,7 @@ Server.prototype._onConfigChanged = function(cb) {
 	var self = this;
 	try {
 		log.info('**** Configuration change detected. Launching app...');
-		
+
 		// Build application
 		var application = self.configuration.buildApplication();
 
@@ -76,7 +77,48 @@ Server.prototype._onConfigChanged = function(cb) {
  */
 Server.prototype.start = function() {
 	var self = this;
+	// Watch for configuration changes
 	self.configuration.startWatcher();
+
+	// Start key listener
+	keypress(process.stdin);
+	process.stdin.setRawMode(true);
+	process.stdin.on('keypress', function(c, key) {
+		if (!key) return;
+		if (key.ctrl && (key.name === 'c')) {
+			process.exit(0);
+		}
+		switch (key.name) {
+			case 'q':
+				process.exit(0);
+				break;
+			case 'r':
+				self.configuration.stopWatcher();
+				self.configuration.startWatcher();
+				break;
+			case 's':
+				// Stop all
+				self.configuration.stopWatcher();
+				if (!self.application) return;
+				self.application.stopAll(function(err) {
+					if (err) {
+						console.log('Failed to stop services because: ' + err);
+					} else {
+						console.log('All services stopped');
+						self.application = undefined;
+					}
+				});
+				break;
+			case 'h':
+			default:
+				console.log('Console:');
+				console.log('r - Reload');
+				console.log('s - Stop all services');
+				console.log('q - Quit');
+				break;
+		}
+	})
+	process.stdin.resume();
 }
 
 //log.add(log.transports.File, { level: 'debug', filename: pkg.name + '-debug.log' });

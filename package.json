@@ -5,6 +5,7 @@
 	"dependencies": {
 		"async": "*",
 		"dockerode": "2.x",
+		"keypress": "0.x",
 	    "node-etcd": "~2.1.4",
 		"request": "2.x",
 		"underscore": "1.x",
