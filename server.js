@@ -82,42 +82,44 @@ Server.prototype.start = function() {
 
 	// Start key listener
 	keypress(process.stdin);
-	process.stdin.setRawMode(true);
-	process.stdin.on('keypress', function(c, key) {
-		if (!key) return;
-		if (key.ctrl && (key.name === 'c')) {
-			process.exit(0);
-		}
-		switch (key.name) {
-			case 'q':
+	if (process.stdin.setRawMode) {
+		process.stdin.setRawMode(true);
+		process.stdin.on('keypress', function(c, key) {
+			if (!key) return;
+			if (key.ctrl && (key.name === 'c')) {
 				process.exit(0);
-				break;
-			case 'r':
-				self.configuration.stopWatcher();
-				self.configuration.startWatcher();
-				break;
-			case 's':
-				// Stop all
-				self.configuration.stopWatcher();
-				if (!self.application) return;
-				self.application.stopAll(function(err) {
-					if (err) {
-						console.log('Failed to stop services because: ' + err);
-					} else {
-						console.log('All services stopped');
-						self.application = undefined;
-					}
-				});
-				break;
-			case 'h':
-				console.log('Console:');
-				console.log('r - Reload');
-				console.log('s - Stop all services');
-				console.log('q - Quit');
-				break;
-		}
-	})
-	process.stdin.resume();
+			}
+			switch (key.name) {
+				case 'q':
+					process.exit(0);
+					break;
+				case 'r':
+					self.configuration.stopWatcher();
+					self.configuration.startWatcher();
+					break;
+				case 's':
+					// Stop all
+					self.configuration.stopWatcher();
+					if (!self.application) return;
+					self.application.stopAll(function(err) {
+						if (err) {
+							console.log('Failed to stop services because: ' + err);
+						} else {
+							console.log('All services stopped');
+							self.application = undefined;
+						}
+					});
+					break;
+				case 'h':
+					console.log('Console:');
+					console.log('r - Reload');
+					console.log('s - Stop all services');
+					console.log('q - Quit');
+					break;
+			}
+		})
+		process.stdin.resume();
+	}
 }
 
 //log.add(log.transports.File, { level: 'debug', filename: pkg.name + '-debug.log' });
