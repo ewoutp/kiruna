@@ -1,6 +1,6 @@
 {
 	"name": "kiruna",
-	"version": "0.0.9",
+	"version": "0.0.10",
 	"description": "Docker orchestration and watchdog",
 	"dependencies": {
 		"async": "*",
