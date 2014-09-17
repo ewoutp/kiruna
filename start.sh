@@ -1,4 +1,4 @@
 #!/bin/bash
 
 cd /app/
-node server.js
+node --max_new_space_size=64 server.js
