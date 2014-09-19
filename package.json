@@ -8,6 +8,7 @@
 		"keypress": "0.x",
 	    "node-etcd": "~2.1.4",
 		"request": "2.x",
+		"semver": "3.x",
 		"underscore": "1.x",
 		"winston": "0.x",
 		"winston-loggly": "1.x"
