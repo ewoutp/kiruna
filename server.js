@@ -4,12 +4,16 @@
 var _ = require('underscore');
 var async = require('async');
 var Configuration = require('./lib/Configuration');
+var express = require('express');
 var util = require('util');
 var Docker = require('dockerode');
 var DockerWrapper = require('./lib/DockerWrapper');
 var log = require('winston');
 var pkg = require('./package.json');
 var keypress = require('keypress');
+var http = require('http');
+
+var HTTP_PORT = 7034;
 
 // Main server
 var Server = function() {
@@ -38,6 +42,14 @@ var Server = function() {
 				self._onConfigChanged(done);
 			}
 		}, cb);
+	});
+	self.server = express();
+	self.server.get('/', function(req, res, next) {
+		res.json({
+			ok: true,
+			up: (self.application) && self.application.isUp(),
+			version: pkg.version
+		});
 	});
 }
 
@@ -120,6 +132,14 @@ Server.prototype.start = function() {
 		})
 		process.stdin.resume();
 	}
+
+	// Start http listener
+	http.createServer(self.server).listen(
+		HTTP_PORT,
+		'0.0.0.0',
+		function() {
+			log.info('HTTP server listening on port %s', HTTP_PORT);
+		});
 }
 
 //log.add(log.transports.File, { level: 'debug', filename: pkg.name + '-debug.log' });
