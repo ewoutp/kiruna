@@ -61,16 +61,14 @@ Server.prototype._onConfigChanged = function(cb) {
 	try {
 		log.info('**** Configuration change detected. Launching app...');
 
+		// Save current application
+		var oldApplication = self.application;
+
 		// Build application
 		var application = self.configuration.buildApplication();
 
-		// Mark previous app as stopping
-		if (self.application) {
-			self.application.setStoppingState();
-		}
-
 		// Launch new application
-		application.launch(function(err) {
+		application.launch(oldApplication, function(err) {
 			if (err) {
 				log.error('Failed to launch application: %s', err);
 			}
