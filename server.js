@@ -18,6 +18,7 @@ var HTTP_PORT = 7034;
 // Main server
 var Server = function() {
 	var self = this;
+	self.state = {};
 	self.docker = new DockerWrapper(new Docker({
 		socketPath: '/var/run/docker.sock'
 	}));
@@ -45,9 +46,18 @@ var Server = function() {
 	});
 	self.server = express();
 	self.server.get('/', function(req, res, next) {
+		function getState() {
+			if (self.state.updating) return 'updating';
+			if (self.application) {
+				if (self.application.isUp()) return 'idle';
+				return 'updating';
+			}
+			return 'empty';
+		}
 		res.json({
 			ok: true,
 			up: (self.application) && self.application.isUp(),
+			state: getState(),
 			version: pkg.version
 		});
 	});
@@ -60,6 +70,7 @@ Server.prototype._onConfigChanged = function(cb) {
 	var self = this;
 	try {
 		log.info('**** Configuration change detected. Launching app...');
+		self.state.updating = true;
 
 		// Save current application
 		var oldApplication = self.application;
@@ -74,6 +85,7 @@ Server.prototype._onConfigChanged = function(cb) {
 			}
 			log.verbose('Application launch process completed');
 			self.application = application;
+			self.state.updating = false;
 			return cb();
 		});
 	} catch (err) {
