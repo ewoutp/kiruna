@@ -45,6 +45,7 @@ var Server = function() {
 		}, cb);
 	});
 	self.server = express();
+	self.server.locals.pretty = true;
 	self.server.get('/', function(req, res, next) {
 		function getState() {
 			if (self.state.updating) return 'updating';
@@ -54,12 +55,37 @@ var Server = function() {
 			}
 			return 'empty';
 		}
-		res.json({
+		function getServices() {
+			var application = self.application;
+			if (!application) return [];
+			var result = {};
+			_.each(_.sortBy(application.services, function(s) { return s.name; }), function(s) {
+				var state;
+				if (!s.isEnabled()) state = 'disabled';
+				else if (s.isUp()) state = 'up';
+				else if (s.isRunning()) state = 'running';
+				else state = 'down';
+				var data = {
+					version: s.getTag(),
+					state: state
+				};
+				result[s.name] = data;
+			});
+			return result;
+		}
+		var data = {
 			ok: true,
 			up: (self.application) && self.application.isUp(),
 			state: getState(),
-			version: pkg.version
-		});
+			version: pkg.version,
+			services: getServices()
+		};
+		if (req.query.p) {
+			res.type('text/plain');
+			return res.send(JSON.stringify(data, null, 4));
+		} else {
+			return res.json(data);
+		}
 	});
 }
 
