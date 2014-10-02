@@ -1,4 +1,4 @@
-FROM subliminl/docker-node-base
+FROM docker-node-base
 MAINTAINER Ewout Prangsma [ewout AT subliminl.com]
 
 # Setup environment 
