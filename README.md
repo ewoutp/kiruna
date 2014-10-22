@@ -20,47 +20,47 @@ The configuration file is called kiruna.conf and must be accessible in the root 
 
 It is a JSON file with the following structure.
 
-{
-"Variables": {
-    "key": "value"
-},
-"Registration": {
-    "Host": "host-ip of etcd server",
-    "Port": "4001",
-    "Ip": "",
-    "Ttl": "ttl-of-registrations",
-    "Prefix": "prefix-in-etcd-key-space"
-},
-"Defaults": {
-    "any-service-key": "value"
-},
-"Services": {
-    "service-name": {
-        "HardDeploy": "if-true-stop-old-container-then-restart",
-        "Registry": "custom-registry-host-colon-port",
-        "Image": "docker-image-name",
-        "Tag": "docker-image-tag",
-        "Enabled": "true|false",
-        "PublishAllPorts": "true|false",
-        "Dependencies": ["other-service-name"],
-        "SettleTimeout": "time-needed-by-load-balancers-etc-after-a-start-in-ms",
-        "NetworkMode": "any-docker-network-mode",
-        "Ports": {
-            "container-port": "host-port"
-        },
-        "Health": {
-             "Http": {
-                "Port": "docker-port-to-check-on",
-                "Ip": "ip-address-to-check-on (for public IP mapping)",
-                "Path": "/this-is-my-health-indicator"
+    {
+    "Variables": {
+        "key": "value"
+    },
+    "Registration": {
+        "Host": "host-ip of etcd server",
+        "Port": "4001",
+        "Ip": "",
+        "Ttl": "ttl-of-registrations",
+        "Prefix": "prefix-in-etcd-key-space"
+    },
+    "Defaults": {
+        "any-service-key": "value"
+    },
+    "Services": {
+        "service-name": {
+            "HardDeploy": "if-true-stop-old-container-then-restart",
+            "Registry": "custom-registry-host-colon-port",
+            "Image": "docker-image-name",
+            "Tag": "docker-image-tag",
+            "Enabled": "true|false",
+            "PublishAllPorts": "true|false",
+            "Dependencies": ["other-service-name"],
+            "SettleTimeout": "time-needed-by-load-balancers-etc-after-a-start-in-ms",
+            "NetworkMode": "any-docker-network-mode",
+            "Ports": {
+                "container-port": "host-port"
+            },
+            "Health": {
+                 "Http": {
+                    "Port": "docker-port-to-check-on",
+                    "Ip": "ip-address-to-check-on (for public IP mapping)",
+                    "Path": "/this-is-my-health-indicator"
+                }
+            },
+            "Environment": {
+                "key": "value"
+            },
+            "Volumes": {
+                "container-path": "host-path"
             }
-        },
-        "Environment": {
-            "key": "value"
-        },
-        "Volumes": {
-            "container-path": "host-path"
         }
     }
-}
-}
+    }
