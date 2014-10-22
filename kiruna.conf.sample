@@ -1,0 +1,68 @@
+{
+	"Variables": {
+		"NAME": "ewout-test",
+		"REGION": "test",
+		"DISCOVERY": "https://discovery.etcd.io/___your_id"
+	},
+	"Defaults": {
+		"Environment": {
+			"SOME_VARIABLE": "some-value"
+		}
+	},
+	"Registration": {
+		"Host": "${IP}",
+		"Port": "4001",
+		"Ip": "${IP}",
+		"Ttl": "6000",
+		"Prefix": "/services/${REGION}/"
+	},
+	"Services": {
+		"etcd": {
+			"HardDeploy": true,
+			"Image": "subliminl/etcd",
+			"Tag": "0.4.6",
+			"Ports": {
+				"4001/tcp": "4001",
+				"7001/tcp": "7001"
+			},
+			"Volumes": {
+				"/var/lib/etcd": "${HOME}/.subliminl/etcd"
+			},
+			"Cmd": ["-name", "${NAME}", "-addr", "${IP}:4001", "-peer-addr", "${IP}:7001", "-data-dir", "/var/lib/etcd", "-discovery", "${DISCOVERY}"],
+			"Health": [{
+				"Http": {
+					"Port": "4001/tcp",
+					"Ip": "${IP}",
+					"Path": "/v1/keys/"
+				}
+			}],
+			"Register": false
+		},
+		"web-app": {
+			"Image": "your-webapp-image",
+			"Tag": "latest",
+			"PublishAllPorts": true,
+			"Dependencies": ["etcd"],
+			"Enabled": true,
+			"SettleTimeout": 20000,
+			"Health": [{
+				"Http": {
+					"Port": "5000/tcp",
+					"Ip": "${IP}",
+					"Path": "/__status/check"
+				}
+			}]
+		}
+	},
+	"Logging": {
+		"Console": {
+			"Level": "info"
+		},
+		"Loggly": {
+			"Level": "info",
+			"SubDomain": "<<yourdomain>",
+			"Token": "<<yourtoken>>",
+			"Tags": ["kiruna"]
+		}
+	}
+}
