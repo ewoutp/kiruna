@@ -22,9 +22,6 @@
 		"grunt-contrib-jshint": "*",
 		"grunt-jasmine-node": "*"
 	},
-	"publishConfig": {
-		"registry": "http://arvika-ssh:16073/"
-	},
 	"scripts": {
 		"up": "docker run -it -v /var/run/docker.sock:/var/run/docker.sock -e IP=$IP kiruna"
 	}
